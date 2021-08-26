@@ -4,11 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:libpla1/data.dart';
 import 'package:libpla1/page_controller.dart';
 
 import 'ContentModel.dart';
 
+//ignore: must_be_immutable
 class LibPla1 extends StatefulWidget {
   ContentModel model;
   LibPla1({Key? key, required this.model}) : super(key: key);
@@ -39,7 +39,6 @@ class _LibPla1State extends State<LibPla1> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    PageReController c = Get.put(PageReController());
     return showDial(context, model, PageController(initialPage: 0 + 400));
   }
 

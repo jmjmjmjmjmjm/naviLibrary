@@ -1,7 +1,9 @@
 name: libpla1
-description: A new Flutter package project.
+description: wlsauddlv@naver.com
 version: 0.0.1
-homepage:
+repository: https://github.com/jmjmjmjmjmjm/naviLibrary.git
+homepage: https://github.com/jmjmjmjmjmjm/naviLibrary.git
+
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
