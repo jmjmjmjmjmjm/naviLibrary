@@ -6,19 +6,17 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:libpla1/page_controller.dart';
 
-import 'ContentModel.dart';
-
 //ignore: must_be_immutable
 class LibPla1 extends StatefulWidget {
-  ContentModel model;
-  LibPla1({Key? key, required this.model}) : super(key: key);
+  List imgs;
+  LibPla1({Key? key, required this.imgs}) : super(key: key);
   @override
-  _LibPla1State createState() => _LibPla1State(model: model);
+  _LibPla1State createState() => _LibPla1State(imgs: imgs);
 }
 
 class _LibPla1State extends State<LibPla1> with SingleTickerProviderStateMixin {
-  ContentModel model;
-  _LibPla1State({required this.model});
+  List imgs;
+  _LibPla1State({required this.imgs});
 
   int count = 1;
   PageController pageController = PageController();
@@ -39,14 +37,14 @@ class _LibPla1State extends State<LibPla1> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return showDial(context, model, PageController(initialPage: 0 + 400));
+    return showDial(context, PageController(initialPage: 0), imgs);
   }
 
   List transformationController = <TransformationController>[];
   List doubleTapDetails = <TapDownDetails>[];
 
-  showDial(BuildContext context, ContentModel model, PageController pageC) {
-    for (int i = 0; i < model.photos!.length + 1; i++) {
+  showDial(BuildContext context, PageController pageC, List imgs) {
+    for (int i = 0; i < imgs.length + 1; i++) {
       transformationController.add(TransformationController());
       doubleTapDetails.add(TapDownDetails());
     }
@@ -103,64 +101,55 @@ class _LibPla1State extends State<LibPla1> with SingleTickerProviderStateMixin {
       child: Stack(
         children: [
           Center(
-            child: Obx(
-              () => PageView.builder(
-                allowImplicitScrolling: true,
-                physics: c.pageScroll.value
-                    ? ClampingScrollPhysics()
-                    : NeverScrollableScrollPhysics(),
-                controller: pageC,
-                onPageChanged: (value) {
-                  c.count.value = (value % model.photos!.length + 1);
-                },
-                itemBuilder: (context, index) => AbsorbPointer(
-                  absorbing: false,
-                  ignoringSemantics: false,
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onDoubleTap: () =>
-                        _handleDoubleTap(index % model.photos!.length),
-                    onDoubleTapDown: (details) => _handleDoubleTapDown(
-                        details, index % model.photos!.length),
-                    child: InteractiveViewer(
-                      onInteractionEnd: (details) {
-                        c.opacity.value = 0.0;
-                        if (details.velocity.pixelsPerSecond.dx > 1500 ||
-                            details.velocity.pixelsPerSecond.dx < -1500)
-                          c.pageScroll.value = true;
-                        else
-                          c.pageScroll.value = false;
-                        if (transformationController[
-                                    index % model.photos!.length]
-                                .value[0] ==
-                            1.0) {
-                          c.pageScroll.value = true;
-                          c.opacity.value = 1.0;
-                        }
-                      },
-                      transformationController: transformationController[
-                          index % model.photos!.length],
-                      child: Obx(
-                        () => AbsorbPointer(
-                          absorbing: c.pageScroll.value ? false : true,
-                          child: Dismissible(
-                            behavior: c.pageScroll.value
-                                ? HitTestBehavior.deferToChild
-                                : HitTestBehavior.translucent,
-                            onDismissed: (direction) {
-                              Navigator.pop(context);
-                              c.count.value = 1;
-                            },
-                            direction: DismissDirection.down,
-                            key: Key(''),
-                            child: Container(
-                              width: 1000,
-                              height: 1000,
-                              color: Colors.black,
-                              child: Image.network(
-                                model.photos![index % model.photos!.length],
-                                fit: BoxFit.fitWidth,
-                              ),
+            child: PageView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              controller: pageC,
+              onPageChanged: (value) {
+                c.count.value = (value % imgs.length + 1);
+              },
+              itemBuilder: (context, index) => AbsorbPointer(
+                absorbing: false,
+                ignoringSemantics: false,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onDoubleTap: () => _handleDoubleTap(index % imgs.length),
+                  onDoubleTapDown: (details) =>
+                      _handleDoubleTapDown(details, index % imgs.length),
+                  child: InteractiveViewer(
+                    onInteractionEnd: (details) {
+                      c.opacity.value = 0.0;
+                      if (details.velocity.pixelsPerSecond.dx > 1500 ||
+                          details.velocity.pixelsPerSecond.dx < -1500)
+                        c.pageScroll.value = true;
+                      else
+                        c.pageScroll.value = false;
+                      if (transformationController[index % imgs.length]
+                              .value[0] ==
+                          1.0) {
+                        c.pageScroll.value = true;
+                        c.opacity.value = 1.0;
+                      }
+                    },
+                    transformationController:
+                        transformationController[index % imgs.length],
+                    child: Obx(
+                      () => AbsorbPointer(
+                        absorbing: c.pageScroll.value ? false : true,
+                        child: Dismissible(
+                          behavior: c.pageScroll.value
+                              ? HitTestBehavior.deferToChild
+                              : HitTestBehavior.translucent,
+                          onDismissed: (direction) {
+                            Navigator.pop(context);
+                            c.count.value = 1;
+                          },
+                          direction: DismissDirection.down,
+                          key: Key(''),
+                          child: Container(
+                            color: Colors.black,
+                            child: Image.network(
+                              imgs[index % imgs.length],
+                              fit: BoxFit.fitHeight,
                             ),
                           ),
                         ),
@@ -205,7 +194,7 @@ class _LibPla1State extends State<LibPla1> with SingleTickerProviderStateMixin {
                       () => Text(
                         c.count.value.toString() +
                             ' / ' +
-                            model.photos!.length.toString(),
+                            imgs.length.toString(),
                         style: GoogleFonts.notoSans(
                             decoration: TextDecoration.none,
                             color: Colors.white.withOpacity(0.7),

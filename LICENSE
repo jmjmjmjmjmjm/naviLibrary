@@ -1,1 +1,6 @@
-TODO: Add your license here.
+flutter   (?bsd 2 or 3?)
+     flutter library 
+        material-design-icons (Apache License Version 2.0)
+     dart sdk (?BSD-2 clause?)
+       dart io (no license file in github)
+       dart collection (as above)
